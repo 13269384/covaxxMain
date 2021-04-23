@@ -11,10 +11,10 @@
 
 	</parent>
 	<groupId>ASS</groupId>
-	<artifactId>covaxx</artifactId>
+	<artifactId>practice</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>covaxx</name>
-	<description>The backend rest api for covaxx </description>
+	<name>practice</name>
+	<description>The backend rest api for practice </description>
 	<properties>
 		<java.version>16</java.version>
 	</properties>

@@ -1,7 +1,7 @@
 package ASS.covaxx.controller;
 
-import ASS.covaxx.model.Covaxx;
-import ASS.covaxx.repo.CovaxxRepo;
+import ASS.covaxx.model.Practice;
+import ASS.covaxx.repo.PracticeRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -11,62 +11,65 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Collection;
 
 @Controller
-public class CovaxxController {
+public class PracticeController {
 
     @Autowired
-    private CovaxxRepo CovaxxRepo;
+    private PracticeRepo PracticeRepo;
 
     @GetMapping("/practices")
-    public @ResponseBody Collection<Covaxx> getAll(
+    public @ResponseBody Collection<Practice> getAll(
             @RequestParam(required = false) String practiceName){
 
-        return this.CovaxxRepo.find(practiceName);
+        return this.PracticeRepo.find(practiceName);
     }
 
     @GetMapping("/practices/{practiceId}")
-   public @ResponseBody Covaxx getOne(
+   public @ResponseBody
+    Practice getOne(
            @PathVariable String practiceId)
     {
 
-        Covaxx covaxx = this.CovaxxRepo.getById(practiceId);
+        Practice practice = this.PracticeRepo.getById(practiceId);
 
-        if (covaxx == null)
+        if (practice == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"There is no practice with this practice_id");
 
-            return covaxx;
+            return practice;
    }
 
    @PostMapping("/practices")
-   public @ResponseBody Covaxx createNew(@RequestBody Covaxx covaxx) {
+   public @ResponseBody
+   Practice createNew(@RequestBody Practice practice) {
 
-       if (covaxx.practiceId == null)
+       if (practice.practiceId == null)
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Practice must specify a practice_Id");
 
-       Covaxx existingCovaxx = this.CovaxxRepo.getById(covaxx.practiceId);
-       if (existingCovaxx != null) {
+       Practice existingPractice = this.PracticeRepo.getById(practice.practiceId);
+       if (existingPractice != null) {
            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This practice_Id is already used");
        }
 
-        this.CovaxxRepo.save(covaxx);
+        this.PracticeRepo.save(practice);
 
-        return covaxx;
+        return practice;
    }
 
    @PatchMapping("/practices/{practiceId}")
-   public @ResponseBody Covaxx updateExisting(@PathVariable String practiceId, @RequestBody Covaxx changes) {
+   public @ResponseBody
+   Practice updateExisting(@PathVariable String practiceId, @RequestBody Practice changes) {
 
-        Covaxx existingCovaxx = this.CovaxxRepo.getById(practiceId);
+        Practice existingPractice = this.PracticeRepo.getById(practiceId);
 
-        if(existingCovaxx == null) {
+        if(existingPractice == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This practice_id does not exist");
         }
 
         if (changes.practiceName != null)
-            existingCovaxx.practiceName = changes.practiceName;
+            existingPractice.practiceName = changes.practiceName;
 
-        this.CovaxxRepo.save(existingCovaxx);
+        this.PracticeRepo.save(existingPractice);
 
-        return existingCovaxx;
+        return existingPractice;
 
 
    }
