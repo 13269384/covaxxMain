@@ -1,5 +1,8 @@
 package ASS.covaxx.controller;
+import ASS.covaxx.model.Practice;
 import ASS.covaxx.model.Session;
+import ASS.covaxx.repo.PracticeRepo;
+import ASS.covaxx.repo.PractitionerRepo;
 import ASS.covaxx.repo.SessionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,70 +16,70 @@ import java.util.Collection;
 public class SessionController {
 
     @Autowired
-    private SessionRepo SessionRepo;
+    private SessionRepo sessions;
 
-    @GetMapping("/sessions")
-    public @ResponseBody Collection<Session> getAll(){
+    @Autowired
+    private PracticeRepo practices;
 
-        return this.SessionRepo.getAll();
+    @Autowired
+    private PractitionerRepo practitioners;
+
+    @GetMapping("/practices/{practiceID}/sessions")
+    private @ResponseBody
+    Collection<Session> getSessions(
+            @PathVariable String practiceID
+    ) {
+        Practice practice = this.practices.getById(practiceID);
+
+        if (practice == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no practice with this practiceId");
+
+        return sessions.find(practiceID, null);
     }
 
-    @GetMapping("/sessions/{sessionId}")
-    public @ResponseBody
-    Session getOne(
-            @PathVariable String sessionId)
-    {
+    @PostMapping("/practices/{practiceID}/sessions")
+    private @ResponseBody
+    Session createSession(
+            @PathVariable String practiceID,
+            @RequestBody Session session
 
-        Session session = this.SessionRepo.getById(sessionId);
+    ) {
 
-        if (session == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"There is no booking with this sessionId");
+        if (session.sessionId != null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New sessions should not specify any ID");
 
+        session.practiceID = practiceID;
+
+        validate(session);
+
+        this.sessions.save(session);
         return session;
+
+
     }
 
-    @PostMapping("/sessions")
-    public @ResponseBody
-    Session createNew(@RequestBody Session session) {
+    private void validate(Session session) {
+        if (session.practiceID == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No practice ID specified");
 
-        if (session.sessionId == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Booking must specify a sessionId");
-
-        Session existingSession = this.SessionRepo.getById(session.sessionId);
-        if (existingSession != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "This sessionId is already used");
         }
+        if (practices.getById(session.practiceID) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no practice with this ID");
 
-        this.SessionRepo.save(session);
 
-        return session;
-    }
-
-    @PatchMapping("/sessions/{sessionId}")
-    public @ResponseBody
-    Session updateExisting(@PathVariable String sessionId, @RequestBody Session changes) {
-
-        Session existingSession = this.SessionRepo.getById(sessionId);
-
-        if(existingSession == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This sessionId does not exist");
         }
+        if (session.practitionerID == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No practitioner ID specified");
 
-        if (changes.sessionDate != null) {
-            existingSession.sessionDate = changes.sessionDate;
         }
+        if (practitioners.getById(session.practitionerID) == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "There is no practitioner with this ID");
 
 
-        if (changes.sessionTime != null) {
-            existingSession.sessionTime = changes.sessionTime;
         }
-
-
-        this.SessionRepo.save(existingSession);
-
-        return existingSession;
-
 
     }
 
 }
+
+

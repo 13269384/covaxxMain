@@ -32,7 +32,7 @@ public class PracticeController {
         Practice practice = this.PracticeRepo.getById(practiceId);
 
         if (practice == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"There is no practice with this practice_id");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"There is no practice with this practiceId");
 
             return practice;
    }
