@@ -17,9 +17,10 @@ public class CovaxxController {
     private CovaxxRepo CovaxxRepo;
 
     @GetMapping("/practices")
-    public @ResponseBody Collection<Covaxx> getAll(){
+    public @ResponseBody Collection<Covaxx> getAll(
+            @RequestParam(required = false) String practiceName){
 
-        return this.CovaxxRepo.getAll();
+        return this.CovaxxRepo.find(practiceName);
     }
 
     @GetMapping("/practices/{practiceId}")
