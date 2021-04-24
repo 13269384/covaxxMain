@@ -37,6 +37,60 @@ public class SessionController {
         return sessions.find(practiceID, null);
     }
 
+
+    @GetMapping("/sessions/{sessionId}")
+    public @ResponseBody
+    Session getOne(
+            @PathVariable String sessionId)
+    {
+
+        Session session = this.sessions.getById(sessionId);
+
+        if (session == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"There is no sessions with this sessionId");
+
+        return session;
+    }
+
+    @PatchMapping("/sessions/{sessionId}")
+    public @ResponseBody
+    Session updateExisting(@PathVariable String sessionId, @RequestBody Session changes) {
+
+        Session existingSession = this.sessions.getById(sessionId);
+
+        if (existingSession == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "This sessionId does not exist");
+        }
+
+        if (changes.booking != null) {
+            existingSession.booking = changes.booking;
+        }
+
+        if (changes.sessionDate != null) {
+            existingSession.sessionDate = changes.sessionDate;
+        }
+
+        if (changes.sessionTime != null) {
+            existingSession.sessionTime = changes.sessionTime;
+        }
+        if (changes.practiceID != null) {
+            existingSession.practiceID = changes.practiceID;
+        }
+        if (changes.practitionerID != null) {
+            existingSession.practitionerID = changes.practitionerID;
+        }
+
+        this.sessions.save(existingSession);
+
+        return existingSession;
+
+
+    }
+
+
+
+
+
     @PostMapping("/practices/{practiceID}/sessions")
     private @ResponseBody
     Session createSession(
@@ -57,6 +111,7 @@ public class SessionController {
 
 
     }
+
 
     private void validate(Session session) {
         if (session.practiceID == null) {

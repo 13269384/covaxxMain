@@ -17,7 +17,7 @@ public class SessionRepo {
 
     public void save(Session session) {this.mongo.save(session); }
 
-    public Session getById(ObjectId sessionId) { return mongo.findById(sessionId, Session.class) ; }
+    public Session getById(String sessionId) { return mongo.findById(sessionId, Session.class) ; }
 
     public Collection<Session> find(String practiceID, String practitionerID) {
 
