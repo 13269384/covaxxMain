@@ -21,6 +21,7 @@ public class Session {
 
     public String practiceID;
     public String practitionerID;
+    public String patientID;
 
 
 }
