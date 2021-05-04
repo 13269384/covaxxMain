@@ -19,7 +19,7 @@ public class SessionRepo {
 
     public Session getById(String sessionId) { return mongo.findById(sessionId, Session.class) ; }
 
-    public Collection<Session> find(String practiceID, String practitionerID) {
+    public Collection<Session> find(String practiceID, String practitionerID, String patientID) {
 
         Query query = new Query() ;
 
@@ -29,6 +29,9 @@ public class SessionRepo {
 
         if (practitionerID != null)
             query.addCriteria(Criteria.where("practitionerID").is(practitionerID));
+
+        if (patientID != null)
+            query.addCriteria(Criteria.where("patientID").is(patientID));
 
         return this.mongo.find(query, Session.class) ;
     }

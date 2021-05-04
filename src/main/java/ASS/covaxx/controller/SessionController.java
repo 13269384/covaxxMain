@@ -34,7 +34,7 @@ public class SessionController {
         if (practice == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "There is no practice with this practiceId");
 
-        return sessions.find(practiceID, null);
+        return sessions.find(practiceID, null, null);
     }
 
 
@@ -78,6 +78,9 @@ public class SessionController {
         }
         if (changes.practitionerID != null) {
             existingSession.practitionerID = changes.practitionerID;
+        }
+        if (changes.patientID != null) {
+            existingSession.patientID = changes.patientID;
         }
 
         this.sessions.save(existingSession);
